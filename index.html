@@ -43,7 +43,7 @@
             width: 100%;
             box-sizing: border-box;
             padding: 12px 15px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border-radius: 10px;
             border: 1px solid rgba(128, 128, 128, 0.25);
             background-color: var(--secondary-bg-color);
@@ -55,6 +55,37 @@
         .textarea-field {
             min-height: 100px;
             resize: vertical;
+        }
+
+        /* Быстрые фильтры-чипсы в каталоге */
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            margin-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .filter-chips::-webkit-scrollbar {
+            display: none;
+        }
+        .chip {
+            flex: 0 0 auto;
+            padding: 7px 12px;
+            border-radius: 20px;
+            background-color: var(--secondary-bg-color);
+            color: var(--text-color);
+            border: 1px solid rgba(128, 128, 128, 0.25);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .chip.active {
+            background-color: var(--button-color);
+            color: var(--button-text-color);
+            border-color: transparent;
         }
         
         .card {
@@ -293,6 +324,12 @@
     <div id="tab-catalog" class="tab-content">
         <div class="header">Каталог 📖</div>
         <input type="text" id="catalog-search" class="search-box" placeholder="🔍 Поиск (напр. щучий хвост, замиакулькас)..." oninput="filterCatalog()">
+        <div class="filter-chips">
+            <button class="chip active" onclick="setCatalogFilter('all', this)">Все</button>
+            <button class="chip" onclick="setCatalogFilter('pet_safe', this)">🐾 Безопасно</button>
+            <button class="chip" onclick="setCatalogFilter('low_light', this)">🌑 Теневыносливые</button>
+            <button class="chip" onclick="setCatalogFilter('rare_water', this)">💧 Редкий полив</button>
+        </div>
         <div id="catalog-list">
             <div class="loader">Загрузка базы знаний...</div>
         </div>
@@ -362,6 +399,7 @@
         let fullCatalog = [];
         let myPlantsData = [];
         let currentEditingRecordId = null;
+        let activeCatalogFilter = 'all';
 
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -378,8 +416,12 @@
                 
                 fullCatalog = data.catalog || [];
                 myPlantsData = data.userPlants || [];
+
+                // Сортировка по срочности: просроченные и сегодняшние поливы всегда сверху
+                myPlantsData.sort((a, b) => new Date(a.nextWaterDate).getTime() - new Date(b.nextWaterDate).getTime());
+
                 renderMyPlants(myPlantsData);
-                renderCatalog(fullCatalog);
+                filterCatalog();
             } catch (error) {
                 document.getElementById('my-plants-list').innerHTML = '<p class="loader">❌ Ошибка загрузки данных.</p>';
                 document.getElementById('catalog-list').innerHTML = '<p class="loader">❌ Ошибка загрузки данных.</p>';
@@ -507,6 +549,13 @@
             currentEditingRecordId = null;
         }
 
+        function setCatalogFilter(filterKey, btnElement) {
+            activeCatalogFilter = filterKey;
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            btnElement.classList.add('active');
+            filterCatalog();
+        }
+
         function renderCatalog(catalog, currentQuery = '') {
             const container = document.getElementById('catalog-list');
             if (!catalog || catalog.length === 0) {
@@ -514,13 +563,13 @@
                     const safeQuery = currentQuery.replace(/"/g, '&quot;').replace(/'/g, "\\'");
                     container.innerHTML = `
                         <div class="empty-search-box">
-                            <p>Растение <b>«${currentQuery}»</b> пока не найдено в каталоге 🌵</p>
+                            <p>Растение <b>«${currentQuery}»</b> не найдено в текущей выборке 🌵</p>
                             <button class="btn" onclick="requestMissingPlant('${safeQuery}', this)">➕ Запросить добавление в каталог</button>
                             <button class="btn-secondary" onclick="askDoctorAboutMissing('${safeQuery}')">🩺 Узнать про уход у AI-Доктора</button>
                         </div>
                     `;
                 } else {
-                    container.innerHTML = '<p class="loader">Каталог пуст 🌵</p>';
+                    container.innerHTML = '<p class="loader">По выбранному фильтру ничего не найдено 🌵</p>';
                 }
                 return;
             }
@@ -567,29 +616,41 @@
             const rawQuery = document.getElementById('catalog-search').value.trim();
             const query = normalizeText(rawQuery);
 
-            if (!query) {
-                renderCatalog(fullCatalog);
-                return;
-            }
-
-            const queryWords = query.split(/\s+/).filter(w => w.length > 0);
-
-            const filtered = fullCatalog.filter(p => {
-                const haystack = normalizeText(p.name + ' ' + p.aliases);
-                if (haystack.includes(query)) return true;
-
-                const targetWords = haystack.split(/[\s,()\-]+/).filter(w => w.length > 1);
-                return queryWords.every(qw => {
-                    const maxDist = qw.length >= 7 ? 2 : (qw.length >= 4 ? 1 : 0);
-                    return targetWords.some(tw => {
-                        if (tw.includes(qw)) return true;
-                        if (maxDist > 0 && levenshtein(qw, tw) <= maxDist) return true;
-                        return false;
-                    });
-                });
+            // 1. Применяем выбранный чипс-фильтр
+            let list = fullCatalog.filter(p => {
+                if (activeCatalogFilter === 'pet_safe') {
+                    return normalizeText(p.toxicity).includes('безопасно');
+                }
+                if (activeCatalogFilter === 'low_light') {
+                    const light = normalizeText(p.light);
+                    return light.includes('тень') || light.includes('полутень');
+                }
+                if (activeCatalogFilter === 'rare_water') {
+                    return (parseInt(p.waterFreq) || 0) >= 10;
+                }
+                return true;
             });
 
-            renderCatalog(filtered, rawQuery);
+            // 2. Применяем текстовый поиск с прощением опечаток
+            if (query) {
+                const queryWords = query.split(/\s+/).filter(w => w.length > 0);
+                list = list.filter(p => {
+                    const haystack = normalizeText(p.name + ' ' + p.aliases);
+                    if (haystack.includes(query)) return true;
+
+                    const targetWords = haystack.split(/[\s,()\-]+/).filter(w => w.length > 1);
+                    return queryWords.every(qw => {
+                        const maxDist = qw.length >= 7 ? 2 : (qw.length >= 4 ? 1 : 0);
+                        return targetWords.some(tw => {
+                            if (tw.includes(qw)) return true;
+                            if (maxDist > 0 && levenshtein(qw, tw) <= maxDist) return true;
+                            return false;
+                        });
+                    });
+                });
+            }
+
+            renderCatalog(list, rawQuery);
         }
 
         async function requestMissingPlant(query, btnElement) {
