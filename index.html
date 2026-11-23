@@ -90,38 +90,87 @@
         
         .card {
             background-color: var(--secondary-bg-color);
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 14px;
+            padding: 14px;
             margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         .card.clickable {
             cursor: pointer;
         }
+
+        /* Макет карточки с фото слева */
+        .card-top {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Превью растения с цветной рамкой */
+        .plant-thumb {
+            width: 68px;
+            height: 68px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background-color: var(--bg-color);
+            border: 2.5px solid rgba(128, 128, 128, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .plant-thumb.safe {
+            border-color: #66bb6a;
+        }
+        .plant-thumb.toxic {
+            border-color: #ffb74d;
+        }
+        .plant-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .plant-thumb-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: rgba(128, 128, 128, 0.08);
+        }
+
         .card-header-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 6px;
             margin-bottom: 4px;
         }
-        .card h3 { margin: 0 0 6px 0; font-size: 18px; }
+        .card h3 { margin: 0 0 6px 0; font-size: 17px; line-height: 1.25; }
         .card-header-row h3 { margin: 0; }
         .card-subtitle {
-            font-size: 13px;
+            font-size: 12.5px;
             color: var(--hint-color);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
-        .card-chevron { color: var(--hint-color); font-size: 18px; }
-        .card p { margin: 0 0 12px 0; font-size: 14px; color: var(--hint-color); line-height: 1.45; }
+        .card-chevron { color: var(--hint-color); font-size: 18px; line-height: 1; }
+        .card p { margin: 0 0 10px 0; font-size: 13.5px; color: var(--hint-color); line-height: 1.45; }
         
         .btn {
             background-color: var(--button-color);
             color: var(--button-text-color);
             border: none;
             border-radius: 8px;
-            padding: 12px;
+            padding: 11px 12px;
             width: 100%;
-            font-size: 15px;
+            font-size: 14.5px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -132,9 +181,9 @@
             color: var(--text-color);
             border: 1px solid rgba(128, 128, 128, 0.25);
             border-radius: 8px;
-            padding: 12px;
+            padding: 11px 12px;
             width: 100%;
-            font-size: 15px;
+            font-size: 14.5px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 8px;
@@ -215,15 +264,26 @@
             max-height: 88vh;
             overflow-y: auto;
         }
+        .modal-header-flex {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .modal-header-flex .plant-thumb {
+            width: 64px;
+            height: 64px;
+        }
         .modal-title {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: bold;
-            margin: 0 0 4px 0;
+            margin: 0 0 3px 0;
+            line-height: 1.2;
         }
         .modal-subtitle {
             font-size: 13px;
             color: var(--hint-color);
-            margin: 0 0 12px 0;
+            margin: 0;
         }
         .modal-info {
             font-size: 13.5px;
@@ -350,420 +410,4 @@
     <!-- Модальное окно деталей и настроек растения -->
     <div id="plant-modal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="modal-plant-name" class="modal-title"></h3>
-            <div id="modal-plant-species" class="modal-subtitle"></div>
-            <div id="modal-plant-info" class="modal-info"></div>
-
-            <div class="settings-block">
-                <div class="settings-title">⚙️ Персональные настройки</div>
-                <label class="field-label" for="edit-custom-name">Свое название (необязательно)</label>
-                <input type="text" id="edit-custom-name" class="modal-input" placeholder="Например, Фикус у окна">
-
-                <div class="settings-row">
-                    <div>
-                        <label class="field-label" for="edit-water-freq">Полив (раз в дн.)</label>
-                        <input type="number" id="edit-water-freq" class="modal-input" min="1" max="60">
-                    </div>
-                    <div>
-                        <label class="field-label" for="edit-last-watered">Последний полив</label>
-                        <input type="date" id="edit-last-watered" class="modal-input">
-                    </div>
-                </div>
-                <button id="save-settings-btn" class="btn" onclick="savePlantSettings()">💾 Сохранить настройки</button>
-            </div>
-
-            <button id="modal-ask-ai-btn" class="btn-secondary">🩺 Проблема с этим растением</button>
-            <button class="btn-secondary" onclick="closeModal()">Закрыть</button>
-        </div>
-    </div>
-
-    <!-- Нижняя навигация -->
-    <div class="bottom-nav">
-        <div id="nav-my-plants" class="nav-item active" onclick="switchTab('my-plants', this)">
-            <span>🪴</span> Мои
-        </div>
-        <div id="nav-catalog" class="nav-item" onclick="switchTab('catalog', this)">
-            <span>📚</span> Каталог
-        </div>
-        <div id="nav-doctor" class="nav-item" onclick="switchTab('doctor', this)">
-            <span>🩺</span> Доктор
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); 
-
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyTa2o6t0h8O-2g6Rhn_XS0IT3WmZiKkqIAwbp_5TmOUqgfuWfSFyL13cuwVCcgLZX2dA/exec';
-        const userId = tg.initDataUnsafe?.user?.id || 0; 
-        let fullCatalog = [];
-        let myPlantsData = [];
-        let currentEditingRecordId = null;
-        let activeCatalogFilter = 'all';
-
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabId).classList.add('active');
-            element.classList.add('active');
-        }
-
-        async function loadData() {
-            try {
-                const response = await fetch(`${API_URL}?action=get_data&user_id=${userId}`);
-                const data = await response.json();
-                
-                fullCatalog = data.catalog || [];
-                myPlantsData = data.userPlants || [];
-
-                // Сортировка по срочности: просроченные и сегодняшние поливы всегда сверху
-                myPlantsData.sort((a, b) => new Date(a.nextWaterDate).getTime() - new Date(b.nextWaterDate).getTime());
-
-                renderMyPlants(myPlantsData);
-                filterCatalog();
-            } catch (error) {
-                document.getElementById('my-plants-list').innerHTML = '<p class="loader">❌ Ошибка загрузки данных.</p>';
-                document.getElementById('catalog-list').innerHTML = '<p class="loader">❌ Ошибка загрузки данных.</p>';
-            }
-        }
-
-        function toInputDate(dateVal) {
-            if (!dateVal) return '';
-            const d = new Date(dateVal);
-            if (isNaN(d.getTime())) return '';
-            const yyyy = d.getFullYear();
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const dd = String(d.getDate()).padStart(2, '0');
-            return `${yyyy}-${mm}-${dd}`;
-        }
-
-        function renderMyPlants(plants) {
-            const container = document.getElementById('my-plants-list');
-            if (!plants || plants.length === 0) {
-                container.innerHTML = '<p class="loader">У вас пока нет растений.<br>Перейдите в «Каталог», чтобы добавить первое!</p>';
-                return;
-            }
-
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            let html = '';
-            plants.forEach((p, index) => {
-                const dateObj = new Date(p.nextWaterDate);
-                dateObj.setHours(0, 0, 0, 0);
-                const dateStr = dateObj.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                
-                const isDue = dateObj.getTime() <= today.getTime();
-                const statusHtml = isDue 
-                    ? `<b style="color: #e53935;">Пора полить! (${dateStr})</b>`
-                    : `<b style="color: var(--link-color);">${dateStr}</b>`;
-
-                const displayTitle = p.customName ? p.customName : p.speciesName;
-                const subtitleHtml = p.customName ? `<div class="card-subtitle">${p.speciesName}</div>` : '';
-                
-                html += `
-                    <div class="card clickable" onclick="openPlantModal(${index})">
-                        <div class="card-header-row">
-                            <h3>${displayTitle}</h3>
-                            <span class="card-chevron">›</span>
-                        </div>
-                        ${subtitleHtml}
-                        <p>💧 Следующий полив: ${statusHtml}</p>
-                        <div class="card-actions">
-                            <button class="btn-water" onclick="event.stopPropagation(); waterPlant('${p.recordId}', this)">💧 Полил</button>
-                            <button class="btn-delete" onclick="event.stopPropagation(); deletePlant('${p.recordId}', this)" title="Удалить">🗑</button>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function openPlantModal(index) {
-            const p = myPlantsData[index];
-            if (!p) return;
-
-            currentEditingRecordId = p.recordId;
-            const nextStr = new Date(p.nextWaterDate).toLocaleDateString('ru-RU');
-
-            document.getElementById('modal-plant-name').innerText = p.customName || p.speciesName;
-            document.getElementById('modal-plant-species').innerText = p.customName ? p.speciesName : `По каталогу: полив раз в ${p.defaultWaterFreq} дн.`;
-            document.getElementById('modal-plant-info').innerHTML = `
-                ☀️ <b>Свет:</b> ${p.light}<br>
-                💦 <b>Влажность:</b> ${p.humidity}<br>
-                🪴 <b>Грунт:</b> ${p.soil}<br>
-                🐾 <b>Безопасность:</b> ${p.toxicity}<br>
-                💧 <b>Следующий полив:</b> ${nextStr}
-            `;
-
-            document.getElementById('edit-custom-name').value = p.customName || '';
-            document.getElementById('edit-water-freq').value = p.waterFreq || p.defaultWaterFreq;
-            document.getElementById('edit-last-watered').value = toInputDate(p.lastWatered);
-
-            const saveBtn = document.getElementById('save-settings-btn');
-            saveBtn.disabled = false;
-            saveBtn.innerText = '💾 Сохранить настройки';
-
-            document.getElementById('modal-ask-ai-btn').onclick = () => {
-                closeModal();
-                document.getElementById('ai-plant-name').value = p.speciesName;
-                document.getElementById('ai-question').value = '';
-                switchTab('doctor', document.getElementById('nav-doctor'));
-                document.getElementById('ai-question').focus();
-            };
-
-            document.getElementById('plant-modal').classList.add('open');
-        }
-
-        async function savePlantSettings() {
-            if (!currentEditingRecordId) return;
-
-            const customName = document.getElementById('edit-custom-name').value.trim();
-            const waterFreq = parseInt(document.getElementById('edit-water-freq').value) || 0;
-            const lastWatered = document.getElementById('edit-last-watered').value;
-            const saveBtn = document.getElementById('save-settings-btn');
-
-            if (waterFreq < 1 || waterFreq > 60) {
-                tg.showAlert("Укажите интервал полива от 1 до 60 дней.");
-                return;
-            }
-
-            saveBtn.disabled = true;
-            saveBtn.innerText = "⏳ Сохраняем...";
-
-            try {
-                const url = `${API_URL}?action=update_plant&record_id=${encodeURIComponent(currentEditingRecordId)}&custom_name=${encodeURIComponent(customName)}&water_freq=${waterFreq}&last_watered=${encodeURIComponent(lastWatered)}`;
-                await fetch(url);
-                await loadData();
-                closeModal();
-            } catch (e) {
-                saveBtn.disabled = false;
-                saveBtn.innerText = "💾 Сохранить настройки";
-                tg.showAlert("Ошибка при сохранении настроек.");
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('plant-modal').classList.remove('open');
-            currentEditingRecordId = null;
-        }
-
-        function setCatalogFilter(filterKey, btnElement) {
-            activeCatalogFilter = filterKey;
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            btnElement.classList.add('active');
-            filterCatalog();
-        }
-
-        function renderCatalog(catalog, currentQuery = '') {
-            const container = document.getElementById('catalog-list');
-            if (!catalog || catalog.length === 0) {
-                if (currentQuery) {
-                    const safeQuery = currentQuery.replace(/"/g, '&quot;').replace(/'/g, "\\'");
-                    container.innerHTML = `
-                        <div class="empty-search-box">
-                            <p>Растение <b>«${currentQuery}»</b> не найдено в текущей выборке 🌵</p>
-                            <button class="btn" onclick="requestMissingPlant('${safeQuery}', this)">➕ Запросить добавление в каталог</button>
-                            <button class="btn-secondary" onclick="askDoctorAboutMissing('${safeQuery}')">🩺 Узнать про уход у AI-Доктора</button>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = '<p class="loader">По выбранному фильтру ничего не найдено 🌵</p>';
-                }
-                return;
-            }
-
-            let html = '';
-            catalog.forEach(p => {
-                html += `
-                    <div class="card">
-                        <h3>${p.name}</h3>
-                        <p>
-                            ☀️ <b>Свет:</b> ${p.light}<br>
-                            💦 <b>Влажность:</b> ${p.humidity}<br>
-                            🪴 <b>Грунт:</b> ${p.soil}<br>
-                            ⏳ <b>Полив:</b> раз в ${p.waterFreq} дн.<br>
-                            ${p.toxicity}
-                        </p>
-                        <button class="btn" onclick="addPlant(${p.id}, this)">Добавить себе</button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function levenshtein(a, b) {
-            if (Math.abs(a.length - b.length) > 2) return 3;
-            const m = [];
-            for (let i = 0; i <= b.length; i++) m[i] = [i];
-            for (let j = 0; j <= a.length; j++) m[0][j] = j;
-            for (let i = 1; i <= b.length; i++) {
-                for (let j = 1; j <= a.length; j++) {
-                    m[i][j] = b[i - 1] === a[j - 1]
-                        ? m[i - 1][j - 1]
-                        : Math.min(m[i - 1][j - 1] + 1, m[i][j - 1] + 1, m[i - 1][j] + 1);
-                }
-            }
-            return m[b.length][a.length];
-        }
-
-        function normalizeText(str) {
-            return String(str || '').toLowerCase().replace(/ё/g, 'е').trim();
-        }
-
-        function filterCatalog() {
-            const rawQuery = document.getElementById('catalog-search').value.trim();
-            const query = normalizeText(rawQuery);
-
-            // 1. Применяем выбранный чипс-фильтр
-            let list = fullCatalog.filter(p => {
-                if (activeCatalogFilter === 'pet_safe') {
-                    return normalizeText(p.toxicity).includes('безопасно');
-                }
-                if (activeCatalogFilter === 'low_light') {
-                    const light = normalizeText(p.light);
-                    return light.includes('тень') || light.includes('полутень');
-                }
-                if (activeCatalogFilter === 'rare_water') {
-                    return (parseInt(p.waterFreq) || 0) >= 10;
-                }
-                return true;
-            });
-
-            // 2. Применяем текстовый поиск с прощением опечаток
-            if (query) {
-                const queryWords = query.split(/\s+/).filter(w => w.length > 0);
-                list = list.filter(p => {
-                    const haystack = normalizeText(p.name + ' ' + p.aliases);
-                    if (haystack.includes(query)) return true;
-
-                    const targetWords = haystack.split(/[\s,()\-]+/).filter(w => w.length > 1);
-                    return queryWords.every(qw => {
-                        const maxDist = qw.length >= 7 ? 2 : (qw.length >= 4 ? 1 : 0);
-                        return targetWords.some(tw => {
-                            if (tw.includes(qw)) return true;
-                            if (maxDist > 0 && levenshtein(qw, tw) <= maxDist) return true;
-                            return false;
-                        });
-                    });
-                });
-            }
-
-            renderCatalog(list, rawQuery);
-        }
-
-        async function requestMissingPlant(query, btnElement) {
-            btnElement.disabled = true;
-            btnElement.innerText = "⏳ Отправляем...";
-            try {
-                await fetch(`${API_URL}?action=request_plant&query=${encodeURIComponent(query)}`);
-                btnElement.innerText = "✅ Заявка принята! Скоро добавим";
-            } catch (e) {
-                btnElement.disabled = false;
-                btnElement.innerText = "➕ Запросить добавление в каталог";
-                tg.showAlert("Ошибка при отправке заявки.");
-            }
-        }
-
-        function askDoctorAboutMissing(query) {
-            fetch(`${API_URL}?action=request_plant&query=${encodeURIComponent(query)}`).catch(() => {});
-
-            document.getElementById('ai-plant-name').value = query;
-            document.getElementById('ai-question').value = 'Расскажи базовые правила ухода: полив, свет, влажность, грунт и безопасность для животных.';
-            switchTab('doctor', document.getElementById('nav-doctor'));
-        }
-
-        async function addPlant(plantId, btnElement) {
-            if (!userId) {
-                tg.showAlert("Откройте приложение через кнопку меню бота.");
-                return;
-            }
-            btnElement.disabled = true;
-            btnElement.innerText = "⏳ Добавляем...";
-            try {
-                await fetch(`${API_URL}?action=add_plant&user_id=${userId}&plant_id=${plantId}`);
-                btnElement.innerText = "✅ Добавлено";
-                loadData();
-            } catch (e) {
-                btnElement.disabled = false;
-                btnElement.innerText = "Добавить себе";
-                tg.showAlert("Ошибка при добавлении.");
-            }
-        }
-
-        async function waterPlant(recordId, btnElement) {
-            btnElement.disabled = true;
-            btnElement.innerText = "⏳ Обновляем...";
-            try {
-                await fetch(`${API_URL}?action=water_plant&record_id=${recordId}`);
-                loadData();
-            } catch (e) {
-                btnElement.disabled = false;
-                btnElement.innerText = "💧 Полил";
-                tg.showAlert("Ошибка при обновлении полива.");
-            }
-        }
-
-        function deletePlant(recordId, btnElement) {
-            const executeDelete = async () => {
-                btnElement.disabled = true;
-                btnElement.innerText = "⏳";
-                try {
-                    await fetch(`${API_URL}?action=delete_plant&record_id=${recordId}`);
-                    loadData();
-                } catch (e) {
-                    btnElement.disabled = false;
-                    btnElement.innerText = "🗑";
-                    tg.showAlert("Ошибка при удалении.");
-                }
-            };
-
-            if (tg.showConfirm) {
-                tg.showConfirm("Удалить растение из «Моих джунглей»?", (confirmed) => {
-                    if (confirmed) executeDelete();
-                });
-            } else if (confirm("Удалить растение из «Моих джунглей»?")) {
-                executeDelete();
-            }
-        }
-
-        async function askDoctor() {
-            const plant = document.getElementById('ai-plant-name').value.trim();
-            const question = document.getElementById('ai-question').value.trim();
-            const btn = document.getElementById('ai-submit-btn');
-            const answerBox = document.getElementById('ai-answer-box');
-
-            if (!question) {
-                tg.showAlert("Напишите, что случилось с растением.");
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerText = "⏳ Доктор думает...";
-            answerBox.style.display = "none";
-
-            try {
-                const url = `${API_URL}?action=ask_ai&plant=${encodeURIComponent(plant)}&question=${encodeURIComponent(question)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-
-                let formatted = (data.answer || "Нет ответа.")
-                    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-                    .replace(/\n/g, '<br>');
-
-                answerBox.innerHTML = formatted;
-                answerBox.style.display = "block";
-            } catch (e) {
-                answerBox.innerHTML = "❌ Ошибка связи с AI-Доктором. Попробуйте еще раз.";
-                answerBox.style.display = "block";
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Получить диагноз";
-            }
-        }
-
-        loadData();
-    </script>
-</body>
-</html>
+            <div class="modal-header
