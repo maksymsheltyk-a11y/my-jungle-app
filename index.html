@@ -9,13 +9,13 @@
         :root {
             --bg-color: var(--tg-theme-bg-color, #ffffff);
             --text-color: var(--tg-theme-text-color, #000000);
-            --hint-color: var(--tg-theme-hint-color, #999999);
+            --hint-color: var(--tg-theme-hint-color, #8e8e93);
             --link-color: var(--tg-theme-link-color, #2481cc);
             --button-color: var(--tg-theme-button-color, #2481cc);
             --button-text-color: var(--tg-theme-button-text-color, #ffffff);
             --secondary-bg-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
@@ -23,14 +23,16 @@
             margin: 0;
             padding: 0;
             padding-bottom: 90px;
+            -webkit-tap-highlight-color: transparent;
         }
-        
+
         .header {
-            padding: 20px 15px 12px;
-            font-size: 24px;
-            font-weight: bold;
+            padding: 18px 15px 10px;
+            font-size: 23px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
         }
-        
+
         .tab-content {
             display: none;
             padding: 0 15px;
@@ -39,13 +41,27 @@
             display: block;
         }
 
+        /* Сезонная плашка */
+        .season-banner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            background-color: var(--secondary-bg-color);
+            font-size: 12.5px;
+            color: var(--hint-color);
+            line-height: 1.35;
+        }
+
         .search-box, .input-field, .textarea-field {
             width: 100%;
             box-sizing: border-box;
-            padding: 12px 15px;
+            padding: 11px 14px;
             margin-bottom: 10px;
             border-radius: 10px;
-            border: 1px solid rgba(128, 128, 128, 0.25);
+            border: 1px solid rgba(128, 128, 128, 0.22);
             background-color: var(--secondary-bg-color);
             color: var(--text-color);
             font-size: 15px;
@@ -57,63 +73,57 @@
             resize: vertical;
         }
 
-        /* Быстрые фильтры-чипсы в каталоге */
+        /* Быстрые фильтры-чипсы */
         .filter-chips {
             display: flex;
             gap: 8px;
             overflow-x: auto;
             padding-bottom: 12px;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
-        .filter-chips::-webkit-scrollbar {
-            display: none;
-        }
+        .filter-chips::-webkit-scrollbar { display: none; }
         .chip {
             flex: 0 0 auto;
             padding: 7px 12px;
             border-radius: 20px;
             background-color: var(--secondary-bg-color);
             color: var(--text-color);
-            border: 1px solid rgba(128, 128, 128, 0.25);
+            border: 1px solid rgba(128, 128, 128, 0.22);
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.15s;
         }
         .chip.active {
             background-color: var(--button-color);
             color: var(--button-text-color);
             border-color: transparent;
         }
-        
+
+        /* Карточки */
         .card {
             background-color: var(--secondary-bg-color);
             border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 12px;
+            margin-bottom: 10px;
         }
-        .card.clickable {
-            cursor: pointer;
-        }
+        .card.clickable { cursor: pointer; }
 
-        /* Макет карточки с фото слева */
         .card-top {
             display: flex;
             gap: 12px;
-            align-items: flex-start;
+            align-items: center;
         }
         .card-body {
             flex: 1;
             min-width: 0;
         }
 
-        /* Превью растения с цветной рамкой */
+        /* Превью фото с цветной рамкой */
         .plant-thumb {
-            width: 68px;
-            height: 68px;
+            width: 64px;
+            height: 64px;
             border-radius: 12px;
             overflow: hidden;
             flex-shrink: 0;
@@ -124,12 +134,8 @@
             justify-content: center;
             box-sizing: border-box;
         }
-        .plant-thumb.safe {
-            border-color: #66bb6a;
-        }
-        .plant-thumb.toxic {
-            border-color: #ffb74d;
-        }
+        .plant-thumb.safe { border-color: #66bb6a; }
+        .plant-thumb.toxic { border-color: #ffb74d; }
         .plant-thumb img {
             width: 100%;
             height: 100%;
@@ -142,7 +148,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 26px;
             background: rgba(128, 128, 128, 0.08);
         }
 
@@ -151,27 +157,94 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: 6px;
-            margin-bottom: 4px;
         }
-        .card h3 { margin: 0 0 6px 0; font-size: 17px; line-height: 1.25; }
-        .card-header-row h3 { margin: 0; }
+        .card h3 {
+            margin: 0 0 3px 0;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }
         .card-subtitle {
             font-size: 12.5px;
             color: var(--hint-color);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .card-chevron { color: var(--hint-color); font-size: 18px; line-height: 1; }
-        .card p { margin: 0 0 10px 0; font-size: 13.5px; color: var(--hint-color); line-height: 1.45; }
-        
+        .card-status {
+            font-size: 13px;
+            color: var(--hint-color);
+            margin: 2px 0 0 0;
+        }
+        .card-note-preview {
+            font-size: 12px;
+            color: var(--hint-color);
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-chevron {
+            color: var(--hint-color);
+            font-size: 18px;
+            line-height: 1;
+            opacity: 0.7;
+        }
+
+        /* Компактные теги-капсулы в каталоге */
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 6px;
+        }
+        .tag-pill {
+            font-size: 11.5px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background-color: var(--bg-color);
+            color: var(--hint-color);
+            white-space: nowrap;
+        }
+        .tag-pill.safe {
+            background-color: rgba(102, 187, 106, 0.14);
+            color: #2e7d32;
+        }
+        .tag-pill.toxic {
+            background-color: rgba(255, 183, 77, 0.18);
+            color: #c66900;
+        }
+
+        /* Кнопка быстрого добавления в каталоге */
+        .btn-quick-add {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--button-color);
+            color: var(--button-text-color);
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-quick-add:disabled { opacity: 0.6; }
+
+        /* Основные кнопки */
         .btn {
             background-color: var(--button-color);
             color: var(--button-text-color);
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 11px 12px;
             width: 100%;
             font-size: 14.5px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
         }
         .btn:disabled { opacity: 0.6; }
@@ -179,11 +252,11 @@
         .btn-secondary {
             background-color: var(--secondary-bg-color);
             color: var(--text-color);
-            border: 1px solid rgba(128, 128, 128, 0.25);
-            border-radius: 8px;
+            border: 1px solid rgba(128, 128, 128, 0.22);
+            border-radius: 10px;
             padding: 11px 12px;
             width: 100%;
-            font-size: 14.5px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 8px;
@@ -199,19 +272,30 @@
             background-color: var(--button-color);
             color: var(--button-text-color);
             border: none;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 14px;
+            border-radius: 9px;
+            padding: 9px 10px;
+            font-size: 13.5px;
             font-weight: 600;
             cursor: pointer;
         }
+        .btn-snooze {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid rgba(128, 128, 128, 0.25);
+            border-radius: 9px;
+            padding: 9px 11px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
         .btn-delete {
-            width: 44px;
-            background-color: rgba(229, 57, 53, 0.12);
+            width: 38px;
+            background-color: rgba(229, 57, 53, 0.1);
             color: #e53935;
-            border: 1px solid rgba(229, 57, 53, 0.25);
-            border-radius: 8px;
-            font-size: 16px;
+            border: 1px solid rgba(229, 57, 53, 0.22);
+            border-radius: 9px;
+            font-size: 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -226,9 +310,8 @@
             margin-top: 10px;
         }
         .empty-search-box p {
-            margin: 0 0 15px 0;
-            font-size: 15px;
-            color: var(--text-color);
+            margin: 0 0 14px 0;
+            font-size: 14.5px;
             line-height: 1.4;
         }
 
@@ -236,31 +319,32 @@
             display: none;
             background-color: var(--secondary-bg-color);
             border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
+            padding: 14px;
+            margin-top: 14px;
             font-size: 14px;
             line-height: 1.5;
             border-left: 4px solid var(--button-color);
         }
 
+        /* Модальное окно */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.55);
             z-index: 100000;
             align-items: center;
             justify-content: center;
-            padding: 16px;
+            padding: 14px;
         }
         .modal-overlay.open { display: flex; }
         .modal-content {
             background-color: var(--bg-color);
             border-radius: 16px;
-            padding: 18px;
+            padding: 16px;
             width: 100%;
-            max-width: 380px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            max-width: 390px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.28);
             max-height: 88vh;
             overflow-y: auto;
         }
@@ -268,70 +352,105 @@
             display: flex;
             gap: 12px;
             align-items: center;
-            margin-bottom: 12px;
-        }
-        .modal-header-flex .plant-thumb {
-            width: 64px;
-            height: 64px;
+            margin-bottom: 14px;
         }
         .modal-title {
-            font-size: 19px;
-            font-weight: bold;
+            font-size: 18px;
+            font-weight: 700;
             margin: 0 0 3px 0;
-            line-height: 1.2;
+            line-height: 1.25;
         }
         .modal-subtitle {
-            font-size: 13px;
+            font-size: 12.5px;
             color: var(--hint-color);
             margin: 0;
         }
-        .modal-info {
-            font-size: 13.5px;
-            line-height: 1.6;
-            color: var(--text-color);
-            margin-bottom: 14px;
-            background: var(--secondary-bg-color);
-            padding: 12px;
-            border-radius: 10px;
+
+        /* Сетка параметров 2x2 без двоеточий */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
         }
+        .info-tile {
+            background-color: var(--secondary-bg-color);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .info-tile-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--hint-color);
+            margin-bottom: 4px;
+        }
+        .info-tile-val {
+            font-size: 12.5px;
+            line-height: 1.35;
+            color: var(--text-color);
+        }
+
+        /* Блок правила полива */
+        .watering-guide {
+            background-color: rgba(36, 129, 204, 0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+        .watering-guide-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--link-color);
+            margin-bottom: 4px;
+        }
+        .watering-guide-text {
+            font-size: 12.5px;
+            line-height: 1.4;
+            color: var(--text-color);
+        }
+
         .settings-block {
             background: var(--secondary-bg-color);
             padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
         }
         .settings-title {
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 700;
             margin: 0 0 10px 0;
         }
         .field-label {
             display: block;
-            font-size: 12px;
+            font-size: 11.5px;
             color: var(--hint-color);
             margin-bottom: 4px;
         }
-        .modal-input {
+        .modal-input, .modal-textarea {
             width: 100%;
             box-sizing: border-box;
-            padding: 10px 12px;
+            padding: 9px 11px;
             margin-bottom: 10px;
             border-radius: 8px;
-            border: 1px solid rgba(128, 128, 128, 0.25);
+            border: 1px solid rgba(128, 128, 128, 0.22);
             background-color: var(--bg-color);
             color: var(--text-color);
             font-size: 14px;
             font-family: inherit;
             outline: none;
         }
+        .modal-textarea {
+            min-height: 62px;
+            resize: vertical;
+        }
         .settings-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
-        .settings-row > div {
-            flex: 1;
-        }
-        
+        .settings-row > div { flex: 1; }
+
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -339,8 +458,8 @@
             display: flex;
             gap: 8px;
             padding: 10px 10px calc(12px + env(safe-area-inset-bottom, 0px)) 10px;
-            border-top: 1px solid rgba(128, 128, 128, 0.2);
-            z-index: 99999 !important; 
+            border-top: 1px solid rgba(128, 128, 128, 0.18);
+            z-index: 99999 !important;
         }
         .nav-item {
             flex: 1;
@@ -348,25 +467,26 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            padding: 11px 6px;
+            padding: 10px 6px;
             border-radius: 10px;
             background-color: var(--secondary-bg-color);
             color: var(--text-color);
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            border: 1px solid rgba(128, 128, 128, 0.2);
+            border: 1px solid rgba(128, 128, 128, 0.15);
         }
         .nav-item.active {
             background-color: var(--button-color);
             color: var(--button-text-color);
             border-color: transparent;
         }
-        
+
         .loader {
             text-align: center;
-            padding: 40px 0;
+            padding: 40px 15px;
             color: var(--hint-color);
+            font-size: 14px;
         }
     </style>
 </head>
@@ -375,6 +495,7 @@
     <!-- Вкладка 1: Мои растения -->
     <div id="tab-my-plants" class="tab-content active">
         <div class="header">Мои джунгли 🌿</div>
+        <div id="season-banner" class="season-banner"></div>
         <div id="my-plants-list">
             <div class="loader">Загрузка ваших растений...</div>
         </div>
@@ -382,8 +503,8 @@
 
     <!-- Вкладка 2: Каталог -->
     <div id="tab-catalog" class="tab-content">
-        <div class="header">Каталог 📖</div>
-        <input type="text" id="catalog-search" class="search-box" placeholder="🔍 Поиск (напр. щучий хвост, замиакулькас)..." oninput="filterCatalog()">
+        <div class="header">Каталог</div>
+        <input type="text" id="catalog-search" class="search-box" placeholder="🔍 Поиск (напр. монстера, щучий хвост)..." oninput="filterCatalog()">
         <div class="filter-chips">
             <button class="chip active" onclick="setCatalogFilter('all', this)">Все</button>
             <button class="chip" onclick="setCatalogFilter('pet_safe', this)">🐾 Безопасно</button>
@@ -391,14 +512,14 @@
             <button class="chip" onclick="setCatalogFilter('rare_water', this)">💧 Редкий полив</button>
         </div>
         <div id="catalog-list">
-            <div class="loader">Загрузка базы знаний...</div>
+            <div class="loader">Загрузка каталога...</div>
         </div>
     </div>
 
     <!-- Вкладка 3: AI-Доктор -->
     <div id="tab-doctor" class="tab-content">
-        <div class="header">AI-Доктор 🩺</div>
-        <p style="font-size: 14px; color: var(--hint-color); margin-top: 0;">
+        <div class="header">AI-Доктор</div>
+        <p style="font-size: 13.5px; color: var(--hint-color); margin-top: 0; line-height: 1.45;">
             Опишите симптомы (желтеют листья, появились пятна, сохнут кончики), и нейросеть подскажет, как спасти растение.
         </p>
         <input type="text" id="ai-plant-name" class="input-field" placeholder="Название растения (например, Монстера)">
@@ -407,37 +528,55 @@
         <div id="ai-answer-box" class="ai-answer"></div>
     </div>
 
-    <!-- Модальное окно деталей и настроек растения -->
+    <!-- Универсальное модальное окно растения -->
     <div id="plant-modal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header-flex">
                 <div id="modal-plant-thumb"></div>
-                <div>
+                <div style="min-width:0;">
                     <h3 id="modal-plant-name" class="modal-title"></h3>
                     <div id="modal-plant-species" class="modal-subtitle"></div>
                 </div>
             </div>
-            <div id="modal-plant-info" class="modal-info"></div>
 
-            <div class="settings-block">
-                <div class="settings-title">⚙️ Персональные настройки</div>
-                <label class="field-label" for="edit-custom-name">Свое название (необязательно)</label>
-                <input type="text" id="edit-custom-name" class="modal-input" placeholder="Например, Фикус у окна">
+            <div id="modal-info-grid" class="info-grid"></div>
 
-                <div class="settings-row">
-                    <div>
-                        <label class="field-label" for="edit-water-freq">Полив (раз в дн.)</label>
-                        <input type="number" id="edit-water-freq" class="modal-input" min="1" max="60">
-                    </div>
-                    <div>
-                        <label class="field-label" for="edit-last-watered">Последний полив</label>
-                        <input type="date" id="edit-last-watered" class="modal-input">
-                    </div>
-                </div>
-                <button id="save-settings-btn" class="btn" onclick="savePlantSettings()">💾 Сохранить настройки</button>
+            <div id="modal-watering-guide" class="watering-guide">
+                <div class="watering-guide-title">💧 Как проверять грунт и поливать</div>
+                <div id="modal-watering-text" class="watering-guide-text"></div>
             </div>
 
-            <button id="modal-ask-ai-btn" class="btn-secondary">🩺 Проблема с этим растением</button>
+            <!-- Блок для каталога -->
+            <div id="modal-catalog-actions" style="display:none;">
+                <button id="modal-add-btn" class="btn">Добавить в мои джунгли</button>
+            </div>
+
+            <!-- Блок настроек для "Моих джунглей" -->
+            <div id="modal-my-settings" style="display:none;">
+                <div class="settings-block">
+                    <div class="settings-title">Персональные настройки</div>
+                    <label class="field-label" for="edit-custom-name">Свое название</label>
+                    <input type="text" id="edit-custom-name" class="modal-input" placeholder="Например, Фикус у окна">
+
+                    <div class="settings-row">
+                        <div>
+                            <label class="field-label" for="edit-water-freq">Полив (раз в дн.)</label>
+                            <input type="number" id="edit-water-freq" class="modal-input" min="1" max="60">
+                        </div>
+                        <div>
+                            <label class="field-label" for="edit-last-watered">Последний полив</label>
+                            <input type="date" id="edit-last-watered" class="modal-input">
+                        </div>
+                    </div>
+
+                    <label class="field-label" for="edit-notes">Моя заметка (пересадка, грунт, удобрение)</label>
+                    <textarea id="edit-notes" class="modal-textarea" placeholder="Например: пересадил в марте в рыхлый грунт"></textarea>
+
+                    <button id="save-settings-btn" class="btn" onclick="savePlantSettings()">Сохранить настройки</button>
+                </div>
+                <button id="modal-ask-ai-btn" class="btn-secondary">🩺 Проблема с этим растением</button>
+            </div>
+
             <button class="btn-secondary" onclick="closeModal()">Закрыть</button>
         </div>
     </div>
@@ -457,19 +596,42 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); 
+        tg.expand();
 
         const API_URL = 'https://script.google.com/macros/s/AKfycbyTa2o6t0h8O-2g6Rhn_XS0IT3WmZiKkqIAwbp_5TmOUqgfuWfSFyL13cuwVCcgLZX2dA/exec';
-        const userId = tg.initDataUnsafe?.user?.id || 0; 
+        const userId = tg.initDataUnsafe?.user?.id || 0;
         let fullCatalog = [];
         let myPlantsData = [];
         let currentEditingRecordId = null;
         let activeCatalogFilter = 'all';
 
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function normalizeText(str) {
+            return String(str || '').toLowerCase().replace(/ё/g, 'е').trim();
+        }
+
+        function initSeasonBanner() {
+            const m = new Date().getMonth(); // 0 = янв, 11 = дек
+            const el = document.getElementById('season-banner');
+            if (m >= 10 || m <= 1) {
+                el.innerHTML = '<span>❄️</span><span><b>Зимний режим:</b> света меньше, грунт сохнет дольше. Проверяйте влажность глубже и поставьте подкормки на паузу.</span>';
+            } else if (m >= 2 && m <= 8) {
+                el.innerHTML = '<span>☀️</span><span><b>Сезон роста:</b> полив регулярный, можно подкармливать растения раз в 2–4 недели.</span>';
+            } else {
+                el.innerHTML = '<span>🍂</span><span><b>Осенний переход:</b> постепенно увеличивайте паузы между поливами и сокращайте удобрения.</span>';
+            }
+        }
+
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            
             document.getElementById('tab-' + tabId).classList.add('active');
             element.classList.add('active');
         }
@@ -479,6 +641,38 @@
             if (t.includes('безопасно') || t.includes('нетоксично')) return 'safe';
             if (t.includes('токсично')) return 'toxic';
             return '';
+        }
+
+        function cleanToxicityText(toxicity) {
+            return String(toxicity || '').replace(/^[✅⚠️\s]+/, '').trim();
+        }
+
+        function getShortLight(light) {
+            const l = normalizeText(light);
+            if (l.includes('прямое солнце') || l.includes('максимум света')) return 'Солнце';
+            if (l.includes('тень') || l.includes('полутень')) return 'Полутень';
+            if (l.includes('яркий')) return 'Яркий свет';
+            return 'Рассеянный';
+        }
+
+        function getWateringRule(plant) {
+            const soil = normalizeText(plant.soil);
+            const name = normalizeText((plant.name || plant.speciesName || '') + ' ' + (plant.aliases || ''));
+            const freq = parseInt(plant.waterFreq || plant.defaultWaterFreq) || 7;
+
+            if (name.includes('тилландсия')) {
+                return 'Без грунта: опрыскивайте мягкой водой или замачивайте на 20–30 мин, затем полностью просушивайте розетку вверх дном.';
+            }
+            if (name.includes('орхид') || name.includes('фаленопсис') || soil.includes('кора сосны')) {
+                return 'Погружайте горшок в теплую воду на 15–20 мин, когда корни станут серебристыми, а кора полностью просохнет. Воду в розетке не оставляйте.';
+            }
+            if (freq >= 12 || soil.includes('суккулент') || soil.includes('кактус')) {
+                return 'Дождитесь полной просушки грунта до дна горшка. Поливайте умеренно по краю, лишнюю воду из поддона сразу сливайте.';
+            }
+            if (freq <= 4) {
+                return 'Не давайте кому пересыхать: поливайте, когда верхние 1–2 см подсохнут. Проливайте равномерно до выхода воды в поддон, через 15 мин слейте остаток.';
+            }
+            return 'Проверьте грунт пальцем или деревянной палочкой: верхние 3–4 см должны быть сухими. Пролейте мягкой водой до выхода в поддон и слейте лишнее через 15 мин.';
         }
 
         function buildThumbHtml(plantId, toxicity) {
@@ -491,11 +685,35 @@
             `;
         }
 
+        function buildInfoGridHtml(p) {
+            return `
+                <div class="info-tile">
+                    <div class="info-tile-label">Свет</div>
+                    <div class="info-tile-val">${escapeHtml(p.light)}</div>
+                </div>
+                <div class="info-tile">
+                    <div class="info-tile-label">Влажность</div>
+                    <div class="info-tile-val">${escapeHtml(p.humidity)}</div>
+                </div>
+                <div class="info-tile">
+                    <div class="info-tile-label">Грунт</div>
+                    <div class="info-tile-val">${escapeHtml(p.soil)}</div>
+                </div>
+                <div class="info-tile">
+                    <div class="info-tile-label">Безопасность</div>
+                    <div class="info-tile-val">${escapeHtml(cleanToxicityText(p.toxicity))}</div>
+                </div>
+            `;
+        }
+
         async function loadData() {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 12000);
             try {
-                const response = await fetch(`${API_URL}?action=get_data&user_id=${userId}`);
+                const response = await fetch(`${API_URL}?action=get_data&user_id=${userId}`, { signal: controller.signal });
+                clearTimeout(timeoutId);
                 const data = await response.json();
-                
+
                 fullCatalog = data.catalog || [];
                 myPlantsData = data.userPlants || [];
 
@@ -504,8 +722,15 @@
                 renderMyPlants(myPlantsData);
                 filterCatalog();
             } catch (error) {
-                document.getElementById('my-plants-list').innerHTML = '<p class="loader">❌ Ошибка загрузки данных.</p>';
-                document.getElementById('catalog-list').innerHTML = '<p class="loader">❌ Ошибка загрузки данных.</p>';
+                clearTimeout(timeoutId);
+                const errHtml = `
+                    <div class="loader">
+                        Не удалось загрузить данные.<br><br>
+                        <button class="btn" style="max-width:200px;" onclick="loadData()">🔄 Обновить</button>
+                    </div>
+                `;
+                document.getElementById('my-plants-list').innerHTML = errHtml;
+                document.getElementById('catalog-list').innerHTML = errHtml;
             }
         }
 
@@ -522,7 +747,7 @@
         function renderMyPlants(plants) {
             const container = document.getElementById('my-plants-list');
             if (!plants || plants.length === 0) {
-                container.innerHTML = '<p class="loader">У вас пока нет растений.<br>Перейдите в «Каталог», чтобы добавить первое!</p>';
+                container.innerHTML = '<p class="loader">У вас пока нет растений.<br>Перейдите в «Каталог», чтобы добавить первое.</p>';
                 return;
             }
 
@@ -533,18 +758,19 @@
             plants.forEach((p, index) => {
                 const dateObj = new Date(p.nextWaterDate);
                 dateObj.setHours(0, 0, 0, 0);
-                const dateStr = dateObj.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                
-                const isDue = dateObj.getTime() <= today.getTime();
-                const statusHtml = isDue 
-                    ? `<b style="color: #e53935;">Пора полить! (${dateStr})</b>`
-                    : `<b style="color: var(--link-color);">${dateStr}</b>`;
+                const dateStr = dateObj.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
 
-                const displayTitle = p.customName ? p.customName : p.speciesName;
-                const subtitleHtml = p.customName ? `<div class="card-subtitle">${p.speciesName}</div>` : '';
-                
+                const isDue = dateObj.getTime() <= today.getTime();
+                const statusHtml = isDue
+                    ? `<b style="color: #e53935;">Пора полить (${dateStr})</b>`
+                    : `Следующий полив: <b style="color: var(--link-color);">${dateStr}</b>`;
+
+                const displayTitle = escapeHtml(p.customName ? p.customName : p.speciesName);
+                const subtitleHtml = p.customName ? `<div class="card-subtitle">${escapeHtml(p.speciesName)}</div>` : '';
+                const noteHtml = p.notes ? `<div class="card-note-preview">📝 ${escapeHtml(p.notes)}</div>` : '';
+
                 html += `
-                    <div class="card clickable" onclick="openPlantModal(${index})">
+                    <div class="card clickable" onclick="openMyPlantModal(${index})">
                         <div class="card-top">
                             ${buildThumbHtml(p.plantId, p.toxicity)}
                             <div class="card-body">
@@ -553,11 +779,13 @@
                                     <span class="card-chevron">›</span>
                                 </div>
                                 ${subtitleHtml}
-                                <p style="margin-bottom: 0;">💧 Полив: ${statusHtml}</p>
+                                <div class="card-status">${statusHtml}</div>
+                                ${noteHtml}
                             </div>
                         </div>
                         <div class="card-actions">
                             <button class="btn-water" onclick="event.stopPropagation(); waterPlant('${p.recordId}', this)">💧 Полил</button>
+                            <button class="btn-snooze" onclick="event.stopPropagation(); snoozeWater('${p.recordId}', this)" title="Если грунт еще влажный">⏳ +2 дн.</button>
                             <button class="btn-delete" onclick="event.stopPropagation(); deletePlant('${p.recordId}', this)" title="Удалить">🗑</button>
                         </div>
                     </div>
@@ -566,7 +794,7 @@
             container.innerHTML = html;
         }
 
-        function openPlantModal(index) {
+        function openMyPlantModal(index) {
             const p = myPlantsData[index];
             if (!p) return;
 
@@ -575,22 +803,20 @@
 
             document.getElementById('modal-plant-thumb').innerHTML = buildThumbHtml(p.plantId, p.toxicity);
             document.getElementById('modal-plant-name').innerText = p.customName || p.speciesName;
-            document.getElementById('modal-plant-species').innerText = p.customName ? p.speciesName : `По каталогу: полив раз в ${p.defaultWaterFreq} дн.`;
-            document.getElementById('modal-plant-info').innerHTML = `
-                ☀️ <b>Свет:</b> ${p.light}<br>
-                💦 <b>Влажность:</b> ${p.humidity}<br>
-                🪴 <b>Грунт:</b> ${p.soil}<br>
-                🐾 <b>Безопасность:</b> ${p.toxicity}<br>
-                💧 <b>Следующий полив:</b> ${nextStr}
-            `;
+            document.getElementById('modal-plant-species').innerText =
+                (p.customName ? `${p.speciesName} • ` : '') + `Полив: ${nextStr}`;
+
+            document.getElementById('modal-info-grid').innerHTML = buildInfoGridHtml(p);
+            document.getElementById('modal-watering-text').innerText = getWateringRule(p);
 
             document.getElementById('edit-custom-name').value = p.customName || '';
             document.getElementById('edit-water-freq').value = p.waterFreq || p.defaultWaterFreq;
             document.getElementById('edit-last-watered').value = toInputDate(p.lastWatered);
+            document.getElementById('edit-notes').value = p.notes || '';
 
             const saveBtn = document.getElementById('save-settings-btn');
             saveBtn.disabled = false;
-            saveBtn.innerText = '💾 Сохранить настройки';
+            saveBtn.innerText = 'Сохранить настройки';
 
             document.getElementById('modal-ask-ai-btn').onclick = () => {
                 closeModal();
@@ -600,6 +826,30 @@
                 document.getElementById('ai-question').focus();
             };
 
+            document.getElementById('modal-catalog-actions').style.display = 'none';
+            document.getElementById('modal-my-settings').style.display = 'block';
+            document.getElementById('plant-modal').classList.add('open');
+        }
+
+        function openCatalogModal(plantId) {
+            const p = fullCatalog.find(item => String(item.id) === String(plantId));
+            if (!p) return;
+
+            currentEditingRecordId = null;
+            document.getElementById('modal-plant-thumb').innerHTML = buildThumbHtml(p.id, p.toxicity);
+            document.getElementById('modal-plant-name').innerText = p.name;
+            document.getElementById('modal-plant-species').innerText = `Полив примерно раз в ${p.waterFreq} дн.`;
+
+            document.getElementById('modal-info-grid').innerHTML = buildInfoGridHtml(p);
+            document.getElementById('modal-watering-text').innerText = getWateringRule(p);
+
+            const addBtn = document.getElementById('modal-add-btn');
+            addBtn.disabled = false;
+            addBtn.innerText = 'Добавить в мои джунгли';
+            addBtn.onclick = () => addPlant(p.id, addBtn, true);
+
+            document.getElementById('modal-my-settings').style.display = 'none';
+            document.getElementById('modal-catalog-actions').style.display = 'block';
             document.getElementById('plant-modal').classList.add('open');
         }
 
@@ -609,6 +859,7 @@
             const customName = document.getElementById('edit-custom-name').value.trim();
             const waterFreq = parseInt(document.getElementById('edit-water-freq').value) || 0;
             const lastWatered = document.getElementById('edit-last-watered').value;
+            const notes = document.getElementById('edit-notes').value.trim();
             const saveBtn = document.getElementById('save-settings-btn');
 
             if (waterFreq < 1 || waterFreq > 60) {
@@ -620,13 +871,13 @@
             saveBtn.innerText = "⏳ Сохраняем...";
 
             try {
-                const url = `${API_URL}?action=update_plant&record_id=${encodeURIComponent(currentEditingRecordId)}&custom_name=${encodeURIComponent(customName)}&water_freq=${waterFreq}&last_watered=${encodeURIComponent(lastWatered)}`;
+                const url = `${API_URL}?action=update_plant&record_id=${encodeURIComponent(currentEditingRecordId)}&custom_name=${encodeURIComponent(customName)}&water_freq=${waterFreq}&last_watered=${encodeURIComponent(lastWatered)}&notes=${encodeURIComponent(notes)}`;
                 await fetch(url);
                 await loadData();
                 closeModal();
             } catch (e) {
                 saveBtn.disabled = false;
-                saveBtn.innerText = "💾 Сохранить настройки";
+                saveBtn.innerText = "Сохранить настройки";
                 tg.showAlert("Ошибка при сохранении настроек.");
             }
         }
@@ -647,11 +898,11 @@
             const container = document.getElementById('catalog-list');
             if (!catalog || catalog.length === 0) {
                 if (currentQuery) {
-                    const safeQuery = currentQuery.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                    const safeQuery = escapeHtml(currentQuery).replace(/'/g, "\\'");
                     container.innerHTML = `
                         <div class="empty-search-box">
-                            <p>Растение <b>«${currentQuery}»</b> не найдено в текущей выборке 🌵</p>
-                            <button class="btn" onclick="requestMissingPlant('${safeQuery}', this)">➕ Запросить добавление в каталог</button>
+                            <p>Растение <b>«${escapeHtml(currentQuery)}»</b> не найдено 🌵</p>
+                            <button class="btn" onclick="requestMissingPlant('${safeQuery}', this)">Запросить добавление в каталог</button>
                             <button class="btn-secondary" onclick="askDoctorAboutMissing('${safeQuery}')">🩺 Узнать про уход у AI-Доктора</button>
                         </div>
                     `;
@@ -663,22 +914,25 @@
 
             let html = '';
             catalog.forEach(p => {
+                const borderClass = getBorderClass(p.toxicity);
+                const safetyPill = borderClass === 'safe'
+                    ? '<span class="tag-pill safe">Безопасно</span>'
+                    : (borderClass === 'toxic' ? '<span class="tag-pill toxic">Токсично</span>' : '');
+
                 html += `
-                    <div class="card">
+                    <div class="card clickable" onclick="openCatalogModal(${p.id})">
                         <div class="card-top">
                             ${buildThumbHtml(p.id, p.toxicity)}
                             <div class="card-body">
-                                <h3>${p.name}</h3>
-                                <p>
-                                    ☀️ <b>Свет:</b> ${p.light}<br>
-                                    💦 <b>Влажность:</b> ${p.humidity}<br>
-                                    🪴 <b>Грунт:</b> ${p.soil}<br>
-                                    ⏳ <b>Полив:</b> раз в ${p.waterFreq} дн.<br>
-                                    ${p.toxicity}
-                                </p>
+                                <h3>${escapeHtml(p.name)}</h3>
+                                <div class="tags-row">
+                                    <span class="tag-pill">💧 ${p.waterFreq} дн.</span>
+                                    <span class="tag-pill">${getShortLight(p.light)}</span>
+                                    ${safetyPill}
+                                </div>
                             </div>
+                            <button class="btn-quick-add" onclick="event.stopPropagation(); addPlant(${p.id}, this, false)" title="Добавить себе">+</button>
                         </div>
-                        <button class="btn" onclick="addPlant(${p.id}, this)">Добавить себе</button>
                     </div>
                 `;
             });
@@ -698,10 +952,6 @@
                 }
             }
             return m[b.length][a.length];
-        }
-
-        function normalizeText(str) {
-            return String(str || '').toLowerCase().replace(/ё/g, 'е').trim();
         }
 
         function filterCatalog() {
@@ -748,43 +998,43 @@
             btnElement.innerText = "⏳ Отправляем...";
             try {
                 await fetch(`${API_URL}?action=request_plant&query=${encodeURIComponent(query)}`);
-                btnElement.innerText = "✅ Заявка принята! Скоро добавим";
+                btnElement.innerText = "✅ Заявка принята";
             } catch (e) {
                 btnElement.disabled = false;
-                btnElement.innerText = "➕ Запросить добавление в каталог";
+                btnElement.innerText = "Запросить добавление в каталог";
                 tg.showAlert("Ошибка при отправке заявки.");
             }
         }
 
         function askDoctorAboutMissing(query) {
             fetch(`${API_URL}?action=request_plant&query=${encodeURIComponent(query)}`).catch(() => {});
-
             document.getElementById('ai-plant-name').value = query;
             document.getElementById('ai-question').value = 'Расскажи базовые правила ухода: полив, свет, влажность, грунт и безопасность для животных.';
             switchTab('doctor', document.getElementById('nav-doctor'));
         }
 
-        async function addPlant(plantId, btnElement) {
+        async function addPlant(plantId, btnElement, fromModal = false) {
             if (!userId) {
                 tg.showAlert("Откройте приложение через кнопку меню бота.");
                 return;
             }
             btnElement.disabled = true;
-            btnElement.innerText = "⏳ Добавляем...";
+            btnElement.innerText = fromModal ? "⏳ Добавляем..." : "…";
             try {
                 await fetch(`${API_URL}?action=add_plant&user_id=${userId}&plant_id=${plantId}`);
-                btnElement.innerText = "✅ Добавлено";
-                loadData();
+                btnElement.innerText = fromModal ? "✅ Добавлено" : "✓";
+                await loadData();
+                if (fromModal) setTimeout(closeModal, 450);
             } catch (e) {
                 btnElement.disabled = false;
-                btnElement.innerText = "Добавить себе";
+                btnElement.innerText = fromModal ? "Добавить в мои джунгли" : "+";
                 tg.showAlert("Ошибка при добавлении.");
             }
         }
 
         async function waterPlant(recordId, btnElement) {
             btnElement.disabled = true;
-            btnElement.innerText = "⏳ Обновляем...";
+            btnElement.innerText = "⏳ ...";
             try {
                 await fetch(`${API_URL}?action=water_plant&record_id=${recordId}`);
                 loadData();
@@ -792,6 +1042,19 @@
                 btnElement.disabled = false;
                 btnElement.innerText = "💧 Полил";
                 tg.showAlert("Ошибка при обновлении полива.");
+            }
+        }
+
+        async function snoozeWater(recordId, btnElement) {
+            btnElement.disabled = true;
+            btnElement.innerText = "⏳";
+            try {
+                await fetch(`${API_URL}?action=snooze_water&record_id=${recordId}`);
+                loadData();
+            } catch (e) {
+                btnElement.disabled = false;
+                btnElement.innerText = "⏳ +2 дн.";
+                tg.showAlert("Ошибка при переносе полива.");
             }
         }
 
@@ -853,6 +1116,7 @@
             }
         }
 
+        initSeasonBanner();
         loadData();
     </script>
 </body>
