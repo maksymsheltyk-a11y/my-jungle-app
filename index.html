@@ -600,6 +600,9 @@
 
         const API_URL = 'https://script.google.com/macros/s/AKfycbyTa2o6t0h8O-2g6Rhn_XS0IT3WmZiKkqIAwbp_5TmOUqgfuWfSFyL13cuwVCcgLZX2dA/exec';
         const userId = tg.initDataUnsafe?.user?.id || 0;
+        const tgUsername = tg.initDataUnsafe?.user?.username || '';
+        const startParam = tg.initDataUnsafe?.start_param || '';
+        let isFirstLoad = true;
         let fullCatalog = [];
         let myPlantsData = [];
         let currentEditingRecordId = null;
@@ -710,7 +713,12 @@
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 12000);
             try {
-                const response = await fetch(`${API_URL}?action=get_data&user_id=${userId}`, { signal: controller.signal });
+                let reqUrl = `${API_URL}?action=get_data&user_id=${userId}`;
+                if (isFirstLoad) {
+                    reqUrl += `&is_init=1&username=${encodeURIComponent(tgUsername)}&source=${encodeURIComponent(startParam)}`;
+                }
+
+                const response = await fetch(reqUrl, { signal: controller.signal });
                 clearTimeout(timeoutId);
                 const data = await response.json();
 
@@ -721,6 +729,12 @@
 
                 renderMyPlants(myPlantsData);
                 filterCatalog();
+
+                if (isFirstLoad && startParam.startsWith('plant_')) {
+                    const targetId = startParam.split('_')[1];
+                    if (targetId) openCatalogModal(targetId);
+                }
+                isFirstLoad = false;
             } catch (error) {
                 clearTimeout(timeoutId);
                 const errHtml = `
