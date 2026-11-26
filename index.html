@@ -120,7 +120,7 @@
             min-width: 0;
         }
 
-        /* Превью фото (только позитивная зеленая рамка для безопасных) */
+        /* Превью фото */
         .plant-thumb {
             width: 64px;
             height: 64px;
@@ -298,6 +298,29 @@
             justify-content: center;
         }
 
+        .empty-state-box {
+            text-align: center;
+            background-color: var(--secondary-bg-color);
+            border-radius: 14px;
+            padding: 28px 18px;
+            margin-top: 10px;
+        }
+        .empty-state-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .empty-state-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 6px 0;
+        }
+        .empty-state-text {
+            font-size: 13.5px;
+            color: var(--hint-color);
+            margin: 0 0 16px 0;
+            line-height: 1.4;
+        }
+
         .empty-search-box {
             text-align: center;
             background-color: var(--secondary-bg-color);
@@ -388,12 +411,12 @@
             margin-top: 3px;
         }
 
-        /* Полноэкранный просмотр фото (Lightbox) */
+        /* Просмотр фото (Lightbox под 300x300 без мыла) */
         .lightbox-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.88);
+            background: rgba(0, 0, 0, 0.86);
             z-index: 200000;
             align-items: center;
             justify-content: center;
@@ -403,10 +426,12 @@
         }
         .lightbox-overlay.open { display: flex; }
         .lightbox-img {
-            max-width: 94vw;
-            max-height: 75vh;
-            border-radius: 16px;
-            object-fit: contain;
+            width: 260px;
+            height: 260px;
+            max-width: 82vw;
+            max-height: 82vw;
+            border-radius: 18px;
+            object-fit: cover;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
             background-color: #f4efe8;
         }
@@ -696,7 +721,7 @@
         </div>
     </div>
 
-    <!-- Полноэкранный просмотр фото (Lightbox) -->
+    <!-- Просмотр фото (Lightbox) -->
     <div id="photo-lightbox" class="lightbox-overlay" onclick="closeLightbox()">
         <img id="lightbox-img" class="lightbox-img" src="" alt="">
         <div id="lightbox-caption" class="lightbox-caption"></div>
@@ -733,6 +758,18 @@
         let isFirstLoad = true;
         let isLightboxOpen = false;
         let isModalOpen = false;
+
+        // Тактильный отклик Telegram
+        function haptic(kind = 'light') {
+            try {
+                if (!tg.HapticFeedback) return;
+                if (kind === 'success') {
+                    tg.HapticFeedback.notificationOccurred('success');
+                } else {
+                    tg.HapticFeedback.impactOccurred(kind);
+                }
+            } catch (e) {}
+        }
 
         // Нативная кнопка "Назад" в Telegram
         if (tg.BackButton) {
@@ -783,6 +820,7 @@
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
             element.classList.add('active');
+            haptic('light');
         }
 
         function isPetSafe(toxicity) {
@@ -836,6 +874,7 @@
         }
 
         function openLightbox(src, title) {
+            haptic('light');
             const img = document.getElementById('lightbox-img');
             img.src = src;
             document.getElementById('lightbox-caption').innerText = title || '';
@@ -948,7 +987,14 @@
         function renderMyPlants(plants) {
             const container = document.getElementById('my-plants-list');
             if (!plants || plants.length === 0) {
-                container.innerHTML = '<p class="loader">У вас пока нет растений.<br>Перейдите в «Каталог», чтобы добавить первое.</p>';
+                container.innerHTML = `
+                    <div class="empty-state-box">
+                        <div class="empty-state-icon">🪴</div>
+                        <div class="empty-state-title">Здесь пока пусто</div>
+                        <div class="empty-state-text">Добавьте свои растения из каталога, чтобы получать напоминания о поливе и подсказки по уходу.</div>
+                        <button class="btn" onclick="switchTab('catalog', document.getElementById('nav-catalog'))">➕ Выбрать первое растение</button>
+                    </div>
+                `;
                 return;
             }
 
@@ -986,7 +1032,7 @@
                         </div>
                         <div class="card-actions">
                             <button class="btn-water" onclick="event.stopPropagation(); waterPlant('${p.recordId}', this)">💧 Полил</button>
-                            <button class="btn-snooze" onclick="event.stopPropagation(); snoozeWater('${p.recordId}', this)" title="Если грунт еще влажный">⏳ +2 дн.</button>
+                            <button class="btn-snooze" onclick="event.stopPropagation(); snoozeWater('${p.recordId}', this)" title="Если грунт еще влажный">⏳ +2 дня</button>
                             <button class="btn-delete" onclick="event.stopPropagation(); deletePlant('${p.recordId}', this)" title="Удалить">🗑</button>
                         </div>
                     </div>
@@ -1073,12 +1119,14 @@
                 return;
             }
 
+            haptic('light');
             saveBtn.disabled = true;
             saveBtn.innerText = "⏳ Сохраняем...";
 
             try {
                 const url = `${API_URL}?action=update_plant&record_id=${encodeURIComponent(currentEditingRecordId)}&custom_name=${encodeURIComponent(customName)}&water_freq=${waterFreq}&last_watered=${encodeURIComponent(lastWatered)}&notes=${encodeURIComponent(notes)}`;
                 await fetch(url);
+                haptic('success');
                 await loadData();
                 closeModal();
             } catch (e) {
@@ -1096,6 +1144,7 @@
         }
 
         function setCatalogFilter(filterKey, btnElement) {
+            haptic('light');
             activeCatalogFilter = filterKey;
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
             btnElement.classList.add('active');
@@ -1201,10 +1250,12 @@
         }
 
         async function requestMissingPlant(query, btnElement) {
+            haptic('light');
             btnElement.disabled = true;
             btnElement.innerText = "⏳ Отправляем...";
             try {
                 await fetch(`${API_URL}?action=request_plant&query=${encodeURIComponent(query)}`);
+                haptic('success');
                 btnElement.innerText = "✅ Заявка принята";
             } catch (e) {
                 btnElement.disabled = false;
@@ -1225,10 +1276,12 @@
                 tg.showAlert("Откройте приложение через кнопку меню бота.");
                 return;
             }
+            haptic('light');
             btnElement.disabled = true;
             btnElement.innerText = fromModal ? "⏳ Добавляем..." : "…";
             try {
                 await fetch(`${API_URL}?action=add_plant&user_id=${userId}&plant_id=${plantId}`);
+                haptic('success');
                 btnElement.innerText = fromModal ? "✅ Добавлено" : "✓";
                 await loadData();
                 if (fromModal) setTimeout(closeModal, 450);
@@ -1240,10 +1293,12 @@
         }
 
         async function waterPlant(recordId, btnElement) {
+            haptic('light');
             btnElement.disabled = true;
             btnElement.innerText = "⏳ ...";
             try {
                 await fetch(`${API_URL}?action=water_plant&record_id=${recordId}`);
+                haptic('success');
                 loadData();
             } catch (e) {
                 btnElement.disabled = false;
@@ -1253,20 +1308,23 @@
         }
 
         async function snoozeWater(recordId, btnElement) {
+            haptic('light');
             btnElement.disabled = true;
             btnElement.innerText = "⏳";
             try {
                 await fetch(`${API_URL}?action=snooze_water&record_id=${recordId}`);
+                haptic('success');
                 loadData();
             } catch (e) {
                 btnElement.disabled = false;
-                btnElement.innerText = "⏳ +2 дн.";
+                btnElement.innerText = "⏳ +2 дня";
                 tg.showAlert("Ошибка при переносе полива.");
             }
         }
 
         function deletePlant(recordId, btnElement) {
             const executeDelete = async () => {
+                haptic('light');
                 btnElement.disabled = true;
                 btnElement.innerText = "⏳";
                 try {
@@ -1299,6 +1357,7 @@
                 return;
             }
 
+            haptic('light');
             btn.disabled = true;
             btn.innerText = "⏳ Доктор думает...";
             answerBox.style.display = "none";
@@ -1314,6 +1373,7 @@
 
                 answerBox.innerHTML = formatted;
                 answerBox.style.display = "block";
+                haptic('success');
             } catch (e) {
                 answerBox.innerHTML = "❌ Ошибка связи с AI-Доктором. Попробуйте еще раз.";
                 answerBox.style.display = "block";
