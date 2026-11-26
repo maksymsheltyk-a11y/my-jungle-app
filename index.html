@@ -120,7 +120,7 @@
             min-width: 0;
         }
 
-        /* Превью фото с цветной рамкой */
+        /* Превью фото (только позитивная зеленая рамка для безопасных) */
         .plant-thumb {
             width: 64px;
             height: 64px;
@@ -128,14 +128,14 @@
             overflow: hidden;
             flex-shrink: 0;
             background-color: var(--bg-color);
-            border: 2.5px solid rgba(128, 128, 128, 0.25);
+            border: 2px solid rgba(128, 128, 128, 0.18);
             display: flex;
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
         }
         .plant-thumb.safe { border-color: #66bb6a; }
-        .plant-thumb.toxic { border-color: #ffb74d; }
+        .plant-thumb.zoomable { cursor: zoom-in; }
         .plant-thumb img {
             width: 100%;
             height: 100%;
@@ -211,10 +211,6 @@
         .tag-pill.safe {
             background-color: rgba(102, 187, 106, 0.14);
             color: #2e7d32;
-        }
-        .tag-pill.toxic {
-            background-color: rgba(255, 183, 77, 0.18);
-            color: #c66900;
         }
 
         /* Кнопка быстрого добавления в каталоге */
@@ -339,6 +335,7 @@
         }
         .modal-overlay.open { display: flex; }
         .modal-content {
+            position: relative;
             background-color: var(--bg-color);
             border-radius: 16px;
             padding: 16px;
@@ -347,12 +344,32 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.28);
             max-height: 88vh;
             overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .modal-close-x {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--secondary-bg-color);
+            color: var(--hint-color);
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
         }
         .modal-header-flex {
             display: flex;
             gap: 12px;
             align-items: center;
             margin-bottom: 14px;
+            padding-right: 34px;
         }
         .modal-title {
             font-size: 18px;
@@ -365,8 +382,48 @@
             color: var(--hint-color);
             margin: 0;
         }
+        .zoom-hint {
+            font-size: 11px;
+            color: var(--link-color);
+            margin-top: 3px;
+        }
 
-        /* Сетка параметров 2x2 без двоеточий */
+        /* Полноэкранный просмотр фото (Lightbox) */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.88);
+            z-index: 200000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            cursor: zoom-out;
+        }
+        .lightbox-overlay.open { display: flex; }
+        .lightbox-img {
+            max-width: 94vw;
+            max-height: 75vh;
+            border-radius: 16px;
+            object-fit: contain;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            background-color: #f4efe8;
+        }
+        .lightbox-caption {
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 14px;
+            text-align: center;
+        }
+        .lightbox-sub {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Сетка параметров 2x2 */
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -427,11 +484,17 @@
             font-size: 11.5px;
             color: var(--hint-color);
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .modal-input, .modal-textarea {
             width: 100%;
+            max-width: 100%;
+            min-width: 0;
             box-sizing: border-box;
-            padding: 9px 11px;
+            padding: 0 11px;
+            height: 40px;
             margin-bottom: 10px;
             border-radius: 8px;
             border: 1px solid rgba(128, 128, 128, 0.22);
@@ -440,16 +503,23 @@
             font-size: 14px;
             font-family: inherit;
             outline: none;
+            -webkit-appearance: none;
+            appearance: none;
         }
         .modal-textarea {
+            height: auto;
+            padding: 9px 11px;
             min-height: 62px;
             resize: vertical;
         }
         .settings-row {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
-        .settings-row > div { flex: 1; }
+        .settings-row > div {
+            min-width: 0;
+        }
 
         .bottom-nav {
             position: fixed;
@@ -482,11 +552,42 @@
             border-color: transparent;
         }
 
+        /* Тематический лоадер */
         .loader {
             text-align: center;
-            padding: 40px 15px;
+            padding: 44px 15px;
             color: var(--hint-color);
             font-size: 14px;
+        }
+        .plant-loader-anim {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .loader-sprout {
+            font-size: 34px;
+            line-height: 1;
+            animation: sproutPulse 1.4s ease-in-out infinite;
+        }
+        .loader-drop {
+            position: absolute;
+            top: 0;
+            font-size: 16px;
+            animation: dropFall 1.4s ease-in infinite;
+        }
+        @keyframes sproutPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+        }
+        @keyframes dropFall {
+            0% { transform: translateY(-4px); opacity: 0; }
+            30% { opacity: 1; }
+            85% { transform: translateY(20px); opacity: 0.9; }
+            100% { transform: translateY(24px); opacity: 0; }
         }
     </style>
 </head>
@@ -497,7 +598,13 @@
         <div class="header">Мои джунгли 🌿</div>
         <div id="season-banner" class="season-banner"></div>
         <div id="my-plants-list">
-            <div class="loader">Загрузка ваших растений...</div>
+            <div class="loader">
+                <div class="plant-loader-anim">
+                    <span class="loader-drop">💧</span>
+                    <span class="loader-sprout">🌱</span>
+                </div>
+                Проверяем почву...
+            </div>
         </div>
     </div>
 
@@ -512,7 +619,13 @@
             <button class="chip" onclick="setCatalogFilter('rare_water', this)">💧 Редкий полив</button>
         </div>
         <div id="catalog-list">
-            <div class="loader">Загрузка каталога...</div>
+            <div class="loader">
+                <div class="plant-loader-anim">
+                    <span class="loader-drop">💧</span>
+                    <span class="loader-sprout">🌱</span>
+                </div>
+                Загружаем каталог...
+            </div>
         </div>
     </div>
 
@@ -531,11 +644,13 @@
     <!-- Универсальное модальное окно растения -->
     <div id="plant-modal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-x" onclick="closeModal()" aria-label="Закрыть">✕</button>
             <div class="modal-header-flex">
                 <div id="modal-plant-thumb"></div>
                 <div style="min-width:0;">
                     <h3 id="modal-plant-name" class="modal-title"></h3>
                     <div id="modal-plant-species" class="modal-subtitle"></div>
+                    <div class="zoom-hint">Нажмите на фото, чтобы увеличить</div>
                 </div>
             </div>
 
@@ -581,6 +696,13 @@
         </div>
     </div>
 
+    <!-- Полноэкранный просмотр фото (Lightbox) -->
+    <div id="photo-lightbox" class="lightbox-overlay" onclick="closeLightbox()">
+        <img id="lightbox-img" class="lightbox-img" src="" alt="">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+        <div class="lightbox-sub">Нажмите в любом месте, чтобы закрыть</div>
+    </div>
+
     <!-- Нижняя навигация -->
     <div class="bottom-nav">
         <div id="nav-my-plants" class="nav-item active" onclick="switchTab('my-plants', this)">
@@ -602,11 +724,35 @@
         const userId = tg.initDataUnsafe?.user?.id || 0;
         const tgUsername = tg.initDataUnsafe?.user?.username || '';
         const startParam = tg.initDataUnsafe?.start_param || '';
-        let isFirstLoad = true;
+        const CACHE_KEY = `my_jungle_cache_v1_${userId}`;
+
         let fullCatalog = [];
         let myPlantsData = [];
         let currentEditingRecordId = null;
         let activeCatalogFilter = 'all';
+        let isFirstLoad = true;
+        let isLightboxOpen = false;
+        let isModalOpen = false;
+
+        // Нативная кнопка "Назад" в Telegram
+        if (tg.BackButton) {
+            tg.BackButton.onClick(() => {
+                if (isLightboxOpen) {
+                    closeLightbox();
+                } else if (isModalOpen) {
+                    closeModal();
+                }
+            });
+        }
+
+        function syncBackButton() {
+            if (!tg.BackButton) return;
+            if (isLightboxOpen || isModalOpen) {
+                tg.BackButton.show();
+            } else {
+                tg.BackButton.hide();
+            }
+        }
 
         function escapeHtml(str) {
             return String(str || '')
@@ -621,7 +767,7 @@
         }
 
         function initSeasonBanner() {
-            const m = new Date().getMonth(); // 0 = янв, 11 = дек
+            const m = new Date().getMonth();
             const el = document.getElementById('season-banner');
             if (m >= 10 || m <= 1) {
                 el.innerHTML = '<span>❄️</span><span><b>Зимний режим:</b> света меньше, грунт сохнет дольше. Проверяйте влажность глубже и поставьте подкормки на паузу.</span>';
@@ -639,11 +785,9 @@
             element.classList.add('active');
         }
 
-        function getBorderClass(toxicity) {
+        function isPetSafe(toxicity) {
             const t = normalizeText(toxicity);
-            if (t.includes('безопасно') || t.includes('нетоксично')) return 'safe';
-            if (t.includes('токсично')) return 'toxic';
-            return '';
+            return t.includes('безопасно') || t.includes('нетоксично');
         }
 
         function cleanToxicityText(toxicity) {
@@ -678,14 +822,32 @@
             return 'Проверьте грунт пальцем или деревянной палочкой: верхние 3–4 см должны быть сухими. Пролейте мягкой водой до выхода в поддон и слейте лишнее через 15 мин.';
         }
 
-        function buildThumbHtml(plantId, toxicity) {
-            const borderClass = getBorderClass(toxicity);
+        function buildThumbHtml(plantId, toxicity, clickableTitle = '') {
+            const borderClass = isPetSafe(toxicity) ? 'safe' : '';
+            const zoomAttr = clickableTitle
+                ? `class="plant-thumb ${borderClass} zoomable" onclick="openLightbox('images/${plantId}.webp', '${escapeHtml(clickableTitle).replace(/'/g, "\\'")}')"`
+                : `class="plant-thumb ${borderClass}"`;
             return `
-                <div class="plant-thumb ${borderClass}">
+                <div ${zoomAttr}>
                     <img src="images/${plantId}.webp" loading="lazy" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="plant-thumb-fallback" style="display:none;">🪴</div>
                 </div>
             `;
+        }
+
+        function openLightbox(src, title) {
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            document.getElementById('lightbox-caption').innerText = title || '';
+            document.getElementById('photo-lightbox').classList.add('open');
+            isLightboxOpen = true;
+            syncBackButton();
+        }
+
+        function closeLightbox() {
+            document.getElementById('photo-lightbox').classList.remove('open');
+            isLightboxOpen = false;
+            syncBackButton();
         }
 
         function buildInfoGridHtml(p) {
@@ -709,9 +871,32 @@
             `;
         }
 
+        function applyData(data) {
+            fullCatalog = data.catalog || [];
+            myPlantsData = data.userPlants || [];
+            myPlantsData.sort((a, b) => new Date(a.nextWaterDate).getTime() - new Date(b.nextWaterDate).getTime());
+            renderMyPlants(myPlantsData);
+            filterCatalog();
+        }
+
+        function hydrateFromCache() {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (!raw) return false;
+                const cached = JSON.parse(raw);
+                if (cached && Array.isArray(cached.catalog) && cached.catalog.length > 0) {
+                    applyData(cached);
+                    return true;
+                }
+            } catch (e) {}
+            return false;
+        }
+
         async function loadData() {
+            const hasCache = isFirstLoad ? hydrateFromCache() : (fullCatalog.length > 0);
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 12000);
+            const timeoutId = setTimeout(() => controller.abort(), 14000);
+
             try {
                 let reqUrl = `${API_URL}?action=get_data&user_id=${userId}`;
                 if (isFirstLoad) {
@@ -722,13 +907,13 @@
                 clearTimeout(timeoutId);
                 const data = await response.json();
 
-                fullCatalog = data.catalog || [];
-                myPlantsData = data.userPlants || [];
-
-                myPlantsData.sort((a, b) => new Date(a.nextWaterDate).getTime() - new Date(b.nextWaterDate).getTime());
-
-                renderMyPlants(myPlantsData);
-                filterCatalog();
+                applyData(data);
+                try {
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({
+                        catalog: data.catalog || [],
+                        userPlants: data.userPlants || []
+                    }));
+                } catch (e) {}
 
                 if (isFirstLoad && startParam.startsWith('plant_')) {
                     const targetId = startParam.split('_')[1];
@@ -737,14 +922,16 @@
                 isFirstLoad = false;
             } catch (error) {
                 clearTimeout(timeoutId);
-                const errHtml = `
-                    <div class="loader">
-                        Не удалось загрузить данные.<br><br>
-                        <button class="btn" style="max-width:200px;" onclick="loadData()">🔄 Обновить</button>
-                    </div>
-                `;
-                document.getElementById('my-plants-list').innerHTML = errHtml;
-                document.getElementById('catalog-list').innerHTML = errHtml;
+                if (!hasCache) {
+                    const errHtml = `
+                        <div class="loader">
+                            Не удалось загрузить данные.<br><br>
+                            <button class="btn" style="max-width:200px;" onclick="loadData()">🔄 Обновить</button>
+                        </div>
+                    `;
+                    document.getElementById('my-plants-list').innerHTML = errHtml;
+                    document.getElementById('catalog-list').innerHTML = errHtml;
+                }
             }
         }
 
@@ -814,9 +1001,10 @@
 
             currentEditingRecordId = p.recordId;
             const nextStr = new Date(p.nextWaterDate).toLocaleDateString('ru-RU');
+            const title = p.customName || p.speciesName;
 
-            document.getElementById('modal-plant-thumb').innerHTML = buildThumbHtml(p.plantId, p.toxicity);
-            document.getElementById('modal-plant-name').innerText = p.customName || p.speciesName;
+            document.getElementById('modal-plant-thumb').innerHTML = buildThumbHtml(p.plantId, p.toxicity, p.speciesName);
+            document.getElementById('modal-plant-name').innerText = title;
             document.getElementById('modal-plant-species').innerText =
                 (p.customName ? `${p.speciesName} • ` : '') + `Полив: ${nextStr}`;
 
@@ -843,6 +1031,8 @@
             document.getElementById('modal-catalog-actions').style.display = 'none';
             document.getElementById('modal-my-settings').style.display = 'block';
             document.getElementById('plant-modal').classList.add('open');
+            isModalOpen = true;
+            syncBackButton();
         }
 
         function openCatalogModal(plantId) {
@@ -850,7 +1040,7 @@
             if (!p) return;
 
             currentEditingRecordId = null;
-            document.getElementById('modal-plant-thumb').innerHTML = buildThumbHtml(p.id, p.toxicity);
+            document.getElementById('modal-plant-thumb').innerHTML = buildThumbHtml(p.id, p.toxicity, p.name);
             document.getElementById('modal-plant-name').innerText = p.name;
             document.getElementById('modal-plant-species').innerText = `Полив примерно раз в ${p.waterFreq} дн.`;
 
@@ -865,6 +1055,8 @@
             document.getElementById('modal-my-settings').style.display = 'none';
             document.getElementById('modal-catalog-actions').style.display = 'block';
             document.getElementById('plant-modal').classList.add('open');
+            isModalOpen = true;
+            syncBackButton();
         }
 
         async function savePlantSettings() {
@@ -899,6 +1091,8 @@
         function closeModal() {
             document.getElementById('plant-modal').classList.remove('open');
             currentEditingRecordId = null;
+            isModalOpen = false;
+            syncBackButton();
         }
 
         function setCatalogFilter(filterKey, btnElement) {
@@ -928,10 +1122,9 @@
 
             let html = '';
             catalog.forEach(p => {
-                const borderClass = getBorderClass(p.toxicity);
-                const safetyPill = borderClass === 'safe'
-                    ? '<span class="tag-pill safe">Безопасно</span>'
-                    : (borderClass === 'toxic' ? '<span class="tag-pill toxic">Токсично</span>' : '');
+                const safetyPill = isPetSafe(p.toxicity)
+                    ? '<span class="tag-pill safe">🐾 Безопасно</span>'
+                    : '';
 
                 html += `
                     <div class="card clickable" onclick="openCatalogModal(${p.id})">
@@ -974,7 +1167,7 @@
 
             let list = fullCatalog.filter(p => {
                 if (activeCatalogFilter === 'pet_safe') {
-                    return normalizeText(p.toxicity).includes('безопасно');
+                    return isPetSafe(p.toxicity);
                 }
                 if (activeCatalogFilter === 'low_light') {
                     const light = normalizeText(p.light);
